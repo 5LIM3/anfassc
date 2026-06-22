@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+  --green: #008751;
+  --green-dark: #005e38;
+  --green-deeper: #003d24;
+  --gold: #D4AF37;
+  --gold-light: #F0D060;
+  --off-white: #F8F5EF;
+  --cream: #EDE8DC;
+  --text-dark: #0A0A0A;
+  --text-mid: #2e2e2e;
+  --text-muted: #666666;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body, 'Barlow', sans-serif);
+  background-color: var(--off-white);
+  color: var(--text-dark);
+}
+
+.font-display { font-family: var(--font-display, 'Playfair Display', serif); }
+.font-condensed { font-family: var(--font-condensed, 'Barlow Condensed', sans-serif); }
+.font-body { font-family: var(--font-body, 'Barlow', sans-serif); }
+
+::selection { background: var(--gold); color: var(--green-deeper); }
