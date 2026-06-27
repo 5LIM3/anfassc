@@ -1,31 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { membershipSchema } from "@/lib/validations";
-import { MEMBERSHIP_TIERS } from "@/types";
-import { generateReference } from "@/lib/utils";
+
+const MEMBERSHIP_PRICES: Record<string, number> = {
+  standard: 10000,
+  premium: 25000,
+  vip: 50000,
+};
+
+function generateReference(prefix = "ANFASSC") {
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+}
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    if (!user || !user.email) {
+      return NextResponse.json({ success: false, error: "Please log in first" }, { status: 401 });
     }
 
     const body = await request.json();
-    const result = membershipSchema.safeParse(body);
+    const tier = body.tier as string;
 
-    if (!result.success) {
-      return NextResponse.json({ success: false, error: "Invalid tier" }, { status: 400 });
+    if (!MEMBERSHIP_PRICES[tier]) {
+      return NextResponse.json({ success: false, error: "Invalid membership tier" }, { status: 400 });
     }
 
-    const { tier } = result.data;
-    const tierDetails = MEMBERSHIP_TIERS[tier];
     const reference = generateReference("MEM");
-    const amountKobo = tierDetails.price * 100;
+    const amountKobo = MEMBERSHIP_PRICES[tier] * 100;
 
-    // Return Paystack payment details — frontend initiates payment
     return NextResponse.json({
       success: true,
       data: {

@@ -27,8 +27,8 @@ export async function middleware(request: NextRequest) {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://res.cloudinary.com https://cdn.sanity.io",
-      "connect-src 'self' https://*.supabase.co https://api.paystack.co",
-      "frame-src https://js.paystack.co",
+      "connect-src 'self' https://*.supabase.co https://api.paystack.co https://checkout.paystack.com",
+      "frame-src https://js.paystack.co https://checkout.paystack.com",
     ].join("; ")
   );
 

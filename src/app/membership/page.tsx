@@ -2,17 +2,36 @@ import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageHero from "@/components/layout/PageHero";
-import { MEMBERSHIP_TIERS } from "@/types";
-import { formatNaira } from "@/lib/utils";
+import MembershipCheckout from "@/components/membership/MembershipCheckout";
 
 export const metadata: Metadata = {
   title: "Membership",
-  description: "Join ANFASSC — Nigeria's official football supporters club. Choose your membership tier and be part of the nation's most passionate sporting community.",
+  description: "Join ANFASSC — Nigeria's official football supporters club.",
 };
 
-export default function MembershipPage() {
-  const tiers = Object.entries(MEMBERSHIP_TIERS);
+const TIERS = [
+  {
+    key: "standard" as const,
+    name: "Standard",
+    price: 10000,
+    benefits: ["Official membership card", "ANFASSC jersey discount (10%)", "Match day updates", "Newsletter"],
+  },
+  {
+    key: "premium" as const,
+    name: "Premium",
+    price: 25000,
+    benefits: ["All Standard benefits", "ANFASSC jersey discount (20%)", "Priority travel package access", "VIP match day experience", "Members-only events"],
+    popular: true,
+  },
+  {
+    key: "vip" as const,
+    name: "VIP",
+    price: 50000,
+    benefits: ["All Premium benefits", "Free ANFASSC welcome pack", "Personal travel coordination", "Meet & greet with officials", "Exclusive VIP badge"],
+  },
+];
 
+export default function MembershipPage() {
   return (
     <>
       <Navbar />
@@ -22,56 +41,50 @@ export default function MembershipPage() {
           title="Become an ANFASSC Member"
           subtitle="Choose your tier and be part of Nigeria's loudest, proudest sporting family."
         />
-        <section className="py-24 px-6">
-          <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {tiers.map(([key, tier], i) => (
+        <section style={{ padding: "6rem 1.5rem" }}>
+          <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem" }}>
+              {TIERS.map((tier) => (
                 <div
-                  key={key}
-                  className={`relative rounded border-2 p-8 flex flex-col ${
-                    key === "premium"
-                      ? "border-green-700 shadow-lg scale-105"
-                      : "border-gray-200"
-                  }`}
+                  key={tier.key}
+                  style={{
+                    position: "relative",
+                    borderRadius: "4px",
+                    border: tier.popular ? "2px solid #008751" : "2px solid #e5e5e5",
+                    padding: "2rem",
+                    display: "flex",
+                    flexDirection: "column",
+                    transform: tier.popular ? "scale(1.03)" : "none",
+                    boxShadow: tier.popular ? "0 12px 30px rgba(0,135,81,0.15)" : "none",
+                  }}
                 >
-                  {key === "premium" && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-green-700 text-white font-condensed font-bold text-xs uppercase tracking-widest px-4 py-1">
+                  {tier.popular && (
+                    <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", background: "#008751", color: "#fff", fontFamily: "var(--font-condensed)", fontWeight: 700, fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", padding: "4px 16px" }}>
                       Most Popular
                     </div>
                   )}
-                  <h3 className="font-condensed font-bold text-2xl uppercase tracking-wider text-text-dark mb-2">
-                    {tier.name}
-                  </h3>
-                  <div className="font-display text-4xl font-bold text-green-700 mb-1">
-                    {formatNaira(tier.price * 100)}
+                  <h3 style={{ fontFamily: "var(--font-condensed)", fontWeight: 700, fontSize: "1.4rem", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "0.5rem" }}>{tier.name}</h3>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: "2.2rem", fontWeight: 700, color: "#008751", marginBottom: "0.25rem" }}>
+                    ₦{tier.price.toLocaleString()}
                   </div>
-                  <p className="font-condensed text-xs uppercase tracking-widest text-text-muted mb-8">per year</p>
-                  <ul className="space-y-3 mb-10 flex-1">
-                    {tier.benefits.map((benefit) => (
-                      <li key={benefit} className="flex items-start gap-3 text-sm text-text-mid">
-                        <span className="text-green-700 mt-0.5 font-bold">✓</span>
-                        {benefit}
+                  <p style={{ fontFamily: "var(--font-condensed)", fontSize: "11px", textTransform: "uppercase", color: "#666", marginBottom: "2rem" }}>per year</p>
+                  <ul style={{ listStyle: "none", padding: 0, marginBottom: "2rem", flex: 1 }}>
+                    {tier.benefits.map((b) => (
+                      <li key={b} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.9rem", color: "#2e2e2e", marginBottom: "0.75rem" }}>
+                        <span style={{ color: "#008751", fontWeight: 700 }}>✓</span>
+                        {b}
                       </li>
                     ))}
                   </ul>
-                  <a
-                    href="/register"
-                    className={`w-full text-center font-condensed font-bold text-sm uppercase tracking-widest py-3 transition-colors ${
-                      key === "premium"
-                        ? "bg-green-700 text-white hover:bg-green-800"
-                        : "border-2 border-green-700 text-green-700 hover:bg-green-700 hover:text-white"
-                    }`}
-                  >
-                    Get Started
-                  </a>
+                  <MembershipCheckout tier={tier.key} />
                 </div>
               ))}
             </div>
 
-            <div className="mt-20 bg-green-900 text-white rounded p-10 text-center">
-              <h2 className="font-display text-3xl font-bold mb-4">Already a member?</h2>
-              <p className="text-green-300 mb-6">Log in to view your membership card, manage your account, and access exclusive benefits.</p>
-              <a href="/login" className="inline-block bg-gold text-green-900 font-condensed font-bold text-sm uppercase tracking-widest px-8 py-3 hover:bg-yellow-400 transition-colors">
+            <div style={{ marginTop: "5rem", background: "#003d24", color: "#fff", borderRadius: "4px", padding: "2.5rem", textAlign: "center" }}>
+              <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.8rem", fontWeight: 700, marginBottom: "1rem" }}>Already a member?</h2>
+              <p style={{ color: "#a8d4bd", marginBottom: "1.5rem" }}>Log in to view your membership card and manage your account.</p>
+              <a href="/login" style={{ display: "inline-block", background: "#D4AF37", color: "#003d24", fontFamily: "var(--font-condensed)", fontWeight: 700, fontSize: "13px", letterSpacing: "1.5px", textTransform: "uppercase", padding: "12px 32px", textDecoration: "none", borderRadius: "2px" }}>
                 Member Login
               </a>
             </div>
