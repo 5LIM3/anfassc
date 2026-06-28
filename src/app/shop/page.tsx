@@ -2,23 +2,21 @@ import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageHero from "@/components/layout/PageHero";
-import { formatNaira } from "@/lib/utils";
+import AddToCartButton from "@/components/shop/AddToCartButton";
 
 export const metadata: Metadata = {
   title: "Shop",
-  description: "Official ANFASSC merchandise — jerseys, polo shirts, caps, scarves, and supporter bundles. Wear your Nigerian pride.",
+  description: "Official ANFASSC merchandise — jerseys, polo shirts, caps, scarves, and supporter bundles.",
 };
 
 const PRODUCTS = [
-  { id: "1", name: "ANFASSC Official Home Jersey 2025", slug: "anfassc-home-jersey-2025", price: 1500000, category: "jersey", badge: "New", badgeColor: "bg-green-700" },
-  { id: "2", name: "AFCON Morocco 2025 Special Edition Polo", slug: "afcon-morocco-2025-polo", price: 1200000, category: "polo", badge: "Limited", badgeColor: "bg-amber-500" },
-  { id: "3", name: "ANFASSC Official Supporters Cap", slug: "anfassc-supporters-cap", price: 550000, category: "cap", badge: null, badgeColor: "" },
-  { id: "4", name: "ANFASSC Membership Welcome Pack", slug: "anfassc-welcome-pack", price: 2500000, category: "bundle", badge: "Bundle", badgeColor: "bg-purple-700" },
-  { id: "5", name: "ANFASSC Supporters Scarf", slug: "anfassc-supporters-scarf", price: 350000, category: "scarf", badge: null, badgeColor: "" },
-  { id: "6", name: "AFCON 2025 Home Jersey (Away)", slug: "anfassc-away-jersey-2025", price: 1500000, category: "jersey", badge: "New", badgeColor: "bg-green-700" },
+  { id: "1", name: "ANFASSC Official Home Jersey 2025", price: 15000, category: "Jersey", badge: "New", badgeColor: "#008751", sizes: ["S", "M", "L", "XL", "XXL"] },
+  { id: "2", name: "AFCON Morocco 2025 Special Edition Polo", price: 12000, category: "Polo", badge: "Limited", badgeColor: "#D4AF37", badgeTextColor: "#003d24", sizes: ["S", "M", "L", "XL"] },
+  { id: "3", name: "ANFASSC Official Supporters Cap", price: 5500, category: "Cap", badge: null, badgeColor: "", sizes: ["One Size"] },
+  { id: "4", name: "ANFASSC Membership Welcome Pack", price: 25000, category: "Bundle", badge: "Bundle", badgeColor: "#6030a0", sizes: ["S", "M", "L", "XL", "XXL"] },
+  { id: "5", name: "ANFASSC Supporters Scarf", price: 3500, category: "Scarf", badge: null, badgeColor: "", sizes: undefined },
+  { id: "6", name: "AFCON 2025 Away Jersey", price: 15000, category: "Jersey", badge: "New", badgeColor: "#008751", sizes: ["S", "M", "L", "XL", "XXL"] },
 ];
-
-const CATEGORIES = ["All", "Jersey", "Polo", "Cap", "Scarf", "Bundle"];
 
 export default function ShopPage() {
   return (
@@ -30,35 +28,30 @@ export default function ShopPage() {
           title="Wear Your Nigerian Pride"
           subtitle="Authentic ANFASSC gear — from the official supporters of the Super Eagles."
         />
-        <section className="py-16 px-6">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex gap-3 flex-wrap mb-12">
-              {CATEGORIES.map((cat) => (
-                <button key={cat} className="font-condensed font-bold text-sm uppercase tracking-widest px-5 py-2 border border-green-200 hover:bg-green-700 hover:text-white hover:border-green-700 transition-colors rounded-sm">
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <section style={{ padding: "4rem 1.5rem" }}>
+          <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1.75rem" }}>
               {PRODUCTS.map((product) => (
-                <div key={product.id} className="bg-white border border-gray-100 rounded overflow-hidden group hover:-translate-y-1 transition-transform duration-200">
-                  <div className="h-56 bg-gray-50 relative flex items-center justify-center">
-                    <span className="font-display text-6xl font-bold italic text-green-700/15">NG</span>
+                <div key={product.id} style={{ background: "#fff", border: "1px solid #eee", borderRadius: "2px", overflow: "hidden" }}>
+                  <div style={{ height: "200px", background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                    <span style={{ fontFamily: "var(--font-display)", fontSize: "3.5rem", fontStyle: "italic", color: "rgba(0,135,81,0.15)", fontWeight: 900 }}>NG</span>
                     {product.badge && (
-                      <span className={`absolute top-3 right-3 ${product.badgeColor} text-white font-condensed font-bold text-xs uppercase tracking-wider px-3 py-1`}>
+                      <span style={{
+                        position: "absolute", top: "10px", right: "10px",
+                        background: product.badgeColor, color: product.badgeTextColor ?? "#fff",
+                        fontWeight: 700, fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase",
+                        padding: "4px 10px",
+                      }}>
                         {product.badge}
                       </span>
                     )}
                   </div>
-                  <div className="p-5">
-                    <p className="font-condensed text-xs uppercase tracking-widest text-text-muted mb-1">{product.category}</p>
-                    <h3 className="font-body font-semibold text-base text-text-dark leading-snug mb-4">{product.name}</h3>
-                    <div className="flex items-center justify-between">
-                      <span className="font-condensed font-bold text-xl text-green-700">{formatNaira(product.price)}</span>
-                      <a href={`/shop/${product.slug}`} className="bg-green-700 hover:bg-green-800 text-white font-condensed font-bold text-xs uppercase tracking-wider px-4 py-2 transition-colors">
-                        View Item
-                      </a>
+                  <div style={{ padding: "1.25rem" }}>
+                    <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "2px", textTransform: "uppercase", color: "#999", marginBottom: "0.4rem" }}>{product.category}</p>
+                    <h3 style={{ fontSize: "0.95rem", fontWeight: 600, color: "#0A0A0A", marginBottom: "0.75rem", lineHeight: 1.3 }}>{product.name}</h3>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
+                      <span style={{ fontWeight: 700, fontSize: "1.05rem", color: "#008751" }}>₦{product.price.toLocaleString()}</span>
+                      <AddToCartButton id={product.id} name={product.name} price={product.price} sizes={product.sizes} />
                     </div>
                   </div>
                 </div>
