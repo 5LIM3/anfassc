@@ -29,35 +29,31 @@ export default function ShopSection() {
           <div>
             <div className="sh-fade" style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "1rem" }}>
               <div style={{ width: "24px", height: "2px", background: "#008751" }} />
-              <span style={{ fontFamily: "var(--font-condensed, 'Barlow Condensed', sans-serif)", fontWeight: 600, fontSize: "11px", letterSpacing: "4px", textTransform: "uppercase", color: "#008751" }}>Official Merchandise</span>
+              <span style={{ fontWeight: 600, fontSize: "11px", letterSpacing: "4px", textTransform: "uppercase", color: "#008751" }}>Official Merchandise</span>
             </div>
-            <h2 className="sh-fade" style={{ fontFamily: "var(--font-display, 'Playfair Display', serif)", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700, color: "#0A0A0A", lineHeight: 1.15, margin: 0 }}>Wear Your<br />Nigerian Pride</h2>
+            <h2 className="sh-fade" style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700, color: "#0A0A0A", lineHeight: 1.15, margin: 0 }}>Wear Your<br />Nigerian Pride</h2>
           </div>
-          <Link href="/shop" style={{ fontFamily: "var(--font-condensed, 'Barlow Condensed', sans-serif)", fontWeight: 700, fontSize: "12px", letterSpacing: "2px", textTransform: "uppercase", color: "#008751", textDecoration: "none", border: "1px solid #008751", padding: "10px 20px", borderRadius: "2px", whiteSpace: "nowrap", transition: "background 0.2s" }}
-            onMouseEnter={e => { e.currentTarget.style.background = "#008751"; e.currentTarget.style.color = "#fff"; }}
-            onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#008751"; }}>
+          <Link href="/shop" style={{ fontWeight: 700, fontSize: "12px", letterSpacing: "2px", textTransform: "uppercase", color: "#008751", textDecoration: "none", border: "1px solid #008751", padding: "10px 20px", borderRadius: "2px", whiteSpace: "nowrap" }}>
             View All Products ›
           </Link>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem" }}>
+        <div className="rgrid-4" style={{ gap: "1.5rem" }}>
           {PRODUCTS.map((p) => (
-            <div key={p.id} className="sh-fade" style={{ border: "1px solid rgba(0,135,81,0.12)", borderRadius: "2px", overflow: "hidden", transition: "transform 0.2s, box-shadow 0.2s", cursor: "pointer" }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.08)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "none"; }}>
-              <div style={{ background: p.bg, height: "220px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+            <div key={p.id} className="sh-fade" style={{ border: "1px solid rgba(0,135,81,0.12)", borderRadius: "2px", overflow: "hidden" }}>
+              <div style={{ background: p.bg, height: "200px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
                 <span style={{ fontSize: "4rem", opacity: 0.3 }}>{p.icon}</span>
                 {p.badge && (
-                  <span style={{ position: "absolute", top: "12px", right: "12px", background: p.badgeBg, color: p.badgeColor ?? "#fff", fontFamily: "var(--font-condensed, 'Barlow Condensed', sans-serif)", fontWeight: 700, fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase", padding: "4px 10px" }}>{p.badge}</span>
+                  <span style={{ position: "absolute", top: "12px", right: "12px", background: p.badgeBg, color: p.badgeColor ?? "#fff", fontWeight: 700, fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase", padding: "4px 10px" }}>{p.badge}</span>
                 )}
               </div>
               <div style={{ padding: "1.25rem" }}>
-                <p style={{ fontFamily: "var(--font-condensed, 'Barlow Condensed', sans-serif)", fontSize: "10px", fontWeight: 600, letterSpacing: "2px", textTransform: "uppercase", color: "#666", marginBottom: "0.4rem" }}>{p.category}</p>
+                <p style={{ fontSize: "10px", fontWeight: 600, letterSpacing: "2px", textTransform: "uppercase", color: "#666", marginBottom: "0.4rem" }}>{p.category}</p>
                 <h4 style={{ fontSize: "0.9rem", fontWeight: 600, color: "#0A0A0A", marginBottom: "1rem", lineHeight: 1.3 }}>{p.name}</h4>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span style={{ fontFamily: "var(--font-condensed, 'Barlow Condensed', sans-serif)", fontWeight: 700, fontSize: "1.1rem", color: "#008751" }}>{p.price}</span>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
+                  <span style={{ fontWeight: 700, fontSize: "1.1rem", color: "#008751" }}>{p.price}</span>
                   <button onClick={() => { setAdded(p.id); setTimeout(() => setAdded(null), 1500); }}
-                    style={{ background: added === p.id ? "#005e38" : "#008751", color: "#fff", fontFamily: "var(--font-condensed, 'Barlow Condensed', sans-serif)", fontWeight: 700, fontSize: "11px", letterSpacing: "1px", textTransform: "uppercase", padding: "8px 14px", border: "none", cursor: "pointer", transition: "background 0.2s" }}>
+                    style={{ background: added === p.id ? "#005e38" : "#008751", color: "#fff", fontWeight: 700, fontSize: "11px", letterSpacing: "1px", textTransform: "uppercase", padding: "8px 14px", border: "none", cursor: "pointer" }}>
                     {added === p.id ? "✓ Added!" : "Add to Cart"}
                   </button>
                 </div>
@@ -66,7 +62,7 @@ export default function ShopSection() {
           ))}
         </div>
       </div>
-      <style>{`.sh-fade { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; } .sh-fade.sh-vis { opacity: 1; transform: translateY(0); } @media (max-width: 900px) { .sh-grid { grid-template-columns: 1fr 1fr !important; } }`}</style>
+      <style>{`.sh-fade { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; } .sh-fade.sh-vis { opacity: 1; transform: translateY(0); }`}</style>
     </section>
   );
 }

@@ -26,3 +26,47 @@ body {
 .font-body { font-family: var(--font-body, 'Barlow', sans-serif); }
 
 ::selection { background: var(--gold); color: var(--green-deeper); }
+
+/* ---- Responsive grid helpers ---- */
+.rgrid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.rgrid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.rgrid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 900px) {
+  .rgrid-3 {
+    grid-template-columns: 1fr;
+  }
+  .rgrid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .rgrid-2 {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .rgrid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---- Mobile padding fix for sections ---- */
+@media (max-width: 768px) {
+  section {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+}

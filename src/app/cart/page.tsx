@@ -142,10 +142,10 @@ export default function CartPage() {
               </Link>
             </div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: "3rem", alignItems: "start" }}>
+            <div className="rgrid-2" style={{ gridTemplateColumns: "1.5fr 1fr", gap: "3rem", alignItems: "start" }}>
               <div>
                 {items.map((item) => (
-                  <div key={`${item.id}-${item.size}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.25rem 0", borderBottom: "1px solid #eee" }}>
+                  <div key={`${item.id}-${item.size}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.25rem 0", borderBottom: "1px solid #eee", flexWrap: "wrap", gap: "1rem" }}>
                     <div>
                       <p style={{ fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.25rem" }}>{item.name}</p>
                       {item.size && <p style={{ fontSize: "0.8rem", color: "#666" }}>Size: {item.size}</p>}
@@ -177,7 +177,7 @@ export default function CartPage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1.25rem" }}>
                   <input placeholder="Full Name" value={address.full_name} onChange={(e) => setAddress((a) => ({ ...a, full_name: e.target.value }))} style={inputStyle} />
                   <input placeholder="Delivery Address" value={address.address} onChange={(e) => setAddress((a) => ({ ...a, address: e.target.value }))} style={inputStyle} />
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                  <div className="rgrid-2" style={{ gap: "0.75rem" }}>
                     <input placeholder="City" value={address.city} onChange={(e) => setAddress((a) => ({ ...a, city: e.target.value }))} style={inputStyle} />
                     <input placeholder="State" value={address.state} onChange={(e) => setAddress((a) => ({ ...a, state: e.target.value }))} style={inputStyle} />
                   </div>

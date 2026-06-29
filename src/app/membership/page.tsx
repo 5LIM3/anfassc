@@ -43,7 +43,7 @@ export default function MembershipPage() {
         />
         <section style={{ padding: "6rem 1.5rem" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem" }}>
+            <div className="rgrid-3" style={{ gap: "2rem" }}>
               {TIERS.map((tier) => (
                 <div
                   key={tier.key}
@@ -54,20 +54,18 @@ export default function MembershipPage() {
                     padding: "2rem",
                     display: "flex",
                     flexDirection: "column",
-                    transform: tier.popular ? "scale(1.03)" : "none",
-                    boxShadow: tier.popular ? "0 12px 30px rgba(0,135,81,0.15)" : "none",
                   }}
                 >
                   {tier.popular && (
-                    <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", background: "#008751", color: "#fff", fontFamily: "var(--font-condensed)", fontWeight: 700, fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", padding: "4px 16px" }}>
+                    <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", background: "#008751", color: "#fff", fontWeight: 700, fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", padding: "4px 16px", whiteSpace: "nowrap" }}>
                       Most Popular
                     </div>
                   )}
-                  <h3 style={{ fontFamily: "var(--font-condensed)", fontWeight: 700, fontSize: "1.4rem", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "0.5rem" }}>{tier.name}</h3>
+                  <h3 style={{ fontWeight: 700, fontSize: "1.4rem", letterSpacing: "1px", textTransform: "uppercase", marginBottom: "0.5rem" }}>{tier.name}</h3>
                   <div style={{ fontFamily: "var(--font-display)", fontSize: "2.2rem", fontWeight: 700, color: "#008751", marginBottom: "0.25rem" }}>
                     ₦{tier.price.toLocaleString()}
                   </div>
-                  <p style={{ fontFamily: "var(--font-condensed)", fontSize: "11px", textTransform: "uppercase", color: "#666", marginBottom: "2rem" }}>per year</p>
+                  <p style={{ fontSize: "11px", textTransform: "uppercase", color: "#666", marginBottom: "2rem" }}>per year</p>
                   <ul style={{ listStyle: "none", padding: 0, marginBottom: "2rem", flex: 1 }}>
                     {tier.benefits.map((b) => (
                       <li key={b} style={{ display: "flex", alignItems: "flex-start", gap: "10px", fontSize: "0.9rem", color: "#2e2e2e", marginBottom: "0.75rem" }}>
@@ -84,7 +82,7 @@ export default function MembershipPage() {
             <div style={{ marginTop: "5rem", background: "#003d24", color: "#fff", borderRadius: "4px", padding: "2.5rem", textAlign: "center" }}>
               <h2 style={{ fontFamily: "var(--font-display)", fontSize: "1.8rem", fontWeight: 700, marginBottom: "1rem" }}>Already a member?</h2>
               <p style={{ color: "#a8d4bd", marginBottom: "1.5rem" }}>Log in to view your membership card and manage your account.</p>
-              <a href="/login" style={{ display: "inline-block", background: "#D4AF37", color: "#003d24", fontFamily: "var(--font-condensed)", fontWeight: 700, fontSize: "13px", letterSpacing: "1.5px", textTransform: "uppercase", padding: "12px 32px", textDecoration: "none", borderRadius: "2px" }}>
+              <a href="/login" style={{ display: "inline-block", background: "#D4AF37", color: "#003d24", fontWeight: 700, fontSize: "13px", letterSpacing: "1.5px", textTransform: "uppercase", padding: "12px 32px", textDecoration: "none", borderRadius: "2px" }}>
                 Member Login
               </a>
             </div>
