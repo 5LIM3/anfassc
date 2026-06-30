@@ -2,18 +2,24 @@ import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PageHero from "@/components/layout/PageHero";
+import { getNewsPosts } from "@/lib/sanity/client";
 
 export const metadata: Metadata = {
   title: "News",
   description: "Latest news and announcements from ANFASSC — Super Eagles updates, membership news, travel packages, and more.",
 };
 
-// In production this fetches from Sanity CMS
-// import { getPosts } from "@/lib/sanity/queries";
+const CATEGORY_LABELS: Record<string, string> = {
+  "super-eagles": "Super Eagles",
+  afcon: "AFCON",
+  membership: "Membership",
+  merchandise: "Merchandise",
+  governance: "Governance",
+  travel: "Travel",
+};
 
 export default async function NewsPage() {
-  // const posts = await getPosts();
-  const categories = ["All", "Super Eagles", "AFCON", "Membership", "Merchandise", "Travel", "Governance"];
+  const posts = await getNewsPosts();
 
   return (
     <>
@@ -24,43 +30,38 @@ export default async function NewsPage() {
           title="News & Announcements"
           subtitle="Stay up to date with everything ANFASSC and Nigerian football."
         />
-        <section className="py-16 px-6">
-          <div className="max-w-6xl mx-auto">
-            {/* Category Filter */}
-            <div className="flex gap-3 flex-wrap mb-12">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  className="font-condensed font-bold text-sm uppercase tracking-widest px-5 py-2 border border-green-200 hover:bg-green-700 hover:text-white hover:border-green-700 transition-colors rounded-sm"
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            {/* News Grid — populated from Sanity in production */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {SAMPLE_NEWS.map((post) => (
-                <article key={post.id} className="bg-white border border-gray-100 rounded overflow-hidden group hover:-translate-y-1 transition-transform duration-200">
-                  <div className="h-48 bg-green-800 relative flex items-center justify-center">
-                    <span className="font-display text-5xl font-bold italic text-white/10">NG</span>
-                    <span className="absolute top-4 left-4 bg-gold text-green-900 font-condensed font-bold text-xs uppercase tracking-wider px-3 py-1">
-                      {post.category}
-                    </span>
-                  </div>
-                  <div className="p-6">
-                    <p className="font-condensed text-xs uppercase tracking-widest text-text-muted mb-2">{post.date}</p>
-                    <h3 className="font-display font-bold text-lg text-text-dark leading-snug mb-3 group-hover:text-green-700 transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="text-sm text-text-muted leading-relaxed">{post.excerpt}</p>
-                    <a href={`/news/${post.slug}`} className="inline-flex items-center gap-1 mt-4 font-condensed font-bold text-sm uppercase tracking-wider text-green-700 hover:gap-2 transition-all">
-                      Read more →
-                    </a>
-                  </div>
-                </article>
-              ))}
-            </div>
+        <section style={{ padding: "4rem 1.5rem" }}>
+          <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+            {posts.length === 0 ? (
+              <p style={{ textAlign: "center", color: "#666", padding: "3rem 0" }}>
+                No news posts yet. Check back soon.
+              </p>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
+                {posts.map((post) => (
+                  <a key={post._id} href={`/news/${post.slug.current}`} style={{ background: "#fff", border: "1px solid #eee", borderRadius: "2px", overflow: "hidden", textDecoration: "none", color: "inherit", display: "block" }}>
+                    <div style={{ height: "180px", background: "#003d24", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                      {post.mainImageUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={post.mainImageUrl} alt={post.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <span style={{ fontFamily: "var(--font-display)", fontSize: "3rem", fontStyle: "italic", color: "rgba(255,255,255,0.1)" }}>NG</span>
+                      )}
+                      <span style={{ position: "absolute", top: "12px", left: "12px", background: "#D4AF37", color: "#003d24", fontWeight: 700, fontSize: "10px", letterSpacing: "1px", textTransform: "uppercase", padding: "4px 10px" }}>
+                        {CATEGORY_LABELS[post.category] ?? post.category}
+                      </span>
+                    </div>
+                    <div style={{ padding: "1.5rem" }}>
+                      <p style={{ fontSize: "11px", color: "#999", marginBottom: "0.5rem" }}>
+                        {new Date(post.publishedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}
+                      </p>
+                      <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontWeight: 700, color: "#0A0A0A", lineHeight: 1.3, marginBottom: "0.5rem" }}>{post.title}</h3>
+                      <p style={{ fontSize: "0.85rem", color: "#666", lineHeight: 1.6 }}>{post.excerpt}</p>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </main>
@@ -68,12 +69,3 @@ export default async function NewsPage() {
     </>
   );
 }
-
-const SAMPLE_NEWS = [
-  { id: 1, title: "ANFASSC Leads Official Delegation to AFCON Morocco 2025", category: "AFCON", date: "January 2025", slug: "anfassc-afcon-morocco-2025", excerpt: "Hundreds of ANFASSC members descended on Moroccan stadiums flying the Nigerian flag as the Super Eagles competed at AFCON 2025." },
-  { id: 2, title: "2025 Membership Registration Now Open — New Benefits Announced", category: "Membership", date: "March 2025", slug: "membership-2025", excerpt: "ANFASSC opens registration for the 2025 membership year with improved benefits for all tiers." },
-  { id: 3, title: "New ANFASSC Official Jersey Collection Available", category: "Merchandise", date: "February 2025", slug: "jersey-collection-2025", excerpt: "The 2025 official jersey collection is now available in the ANFASSC online shop." },
-  { id: 4, title: "ANFASSC Holds Annual General Meeting", category: "Governance", date: "December 2024", slug: "agm-2024", excerpt: "The 2024 AGM adopted the strategic plan for 2025–2027 with key resolutions on membership growth." },
-  { id: 5, title: "Super Eagles AFCON Squad Announced — ANFASSC Reaction", category: "Super Eagles", date: "November 2024", slug: "afcon-squad-reaction", excerpt: "ANFASSC President Prince Abayomi Ogunjimi reacts to the Super Eagles AFCON 2025 squad announcement." },
-  { id: 6, title: "ANFASSC Travel Package: AFCON Morocco 2025", category: "Travel", date: "October 2024", slug: "travel-package-afcon-2025", excerpt: "Book your spot on the official ANFASSC travel package to AFCON 2025 in Morocco." },
-];
