@@ -22,10 +22,16 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  // Lock body scroll while mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b-2 border-gold ${scrolled ? "bg-green-900/98 backdrop-blur-sm" : "bg-green-900"}`}>
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-3 no-underline">
+        <Link href="/" className="flex items-center gap-3 no-underline" onClick={() => setMenuOpen(false)}>
           <div className="w-10 h-10 rounded-full bg-gold flex items-center justify-center font-condensed font-black text-[10px] text-green-900 leading-tight text-center">
             ANFASSC
           </div>
@@ -58,27 +64,39 @@ export default function Navbar() {
           </Link>
         </div>
 
-        <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden text-white p-2" aria-label="Toggle menu">
-          <div className={`w-5 h-0.5 bg-white transition-all ${menuOpen ? "rotate-45 translate-y-1" : ""}`} />
-          <div className={`w-5 h-0.5 bg-white mt-1 transition-all ${menuOpen ? "opacity-0" : ""}`} />
-          <div className={`w-5 h-0.5 bg-white mt-1 transition-all ${menuOpen ? "-rotate-45 -translate-y-2.5" : ""}`} />
-        </button>
+        <div className="flex items-center gap-4 md:hidden">
+          <CartIcon />
+          <button onClick={() => setMenuOpen(!menuOpen)} className="text-white p-2" aria-label="Toggle menu">
+            {menuOpen ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            ) : (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
+            )}
+          </button>
+        </div>
       </div>
 
       {menuOpen && (
-        <div className="md:hidden bg-green-900 border-t border-green-800 px-6 py-4">
-          <div className="flex items-center justify-between mb-3 pb-3 border-b border-green-800">
-            <span className="font-condensed font-bold text-xs uppercase tracking-widest text-white/60">Cart</span>
-            <CartIcon />
-          </div>
+        <div className="md:hidden bg-green-900 border-t border-green-800 px-6 py-4" style={{ maxHeight: "calc(100vh - 64px)", overflowY: "auto" }}>
           {NAV_LINKS.map((link) => (
             <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)}
-              className="block py-3 font-condensed font-bold text-sm uppercase tracking-widest text-white/80 hover:text-gold border-b border-green-800 last:border-0 transition-colors">
+              className="block py-3 font-condensed font-bold text-sm uppercase tracking-widest text-white/80 hover:text-gold border-b border-green-800 transition-colors">
               {link.label}
             </Link>
           ))}
+          <Link href="/login" onClick={() => setMenuOpen(false)}
+            className="block py-3 font-condensed font-bold text-sm uppercase tracking-widest text-white/80 hover:text-gold border-b border-green-800 transition-colors">
+            Login
+          </Link>
           <Link href="/membership" onClick={() => setMenuOpen(false)}
-            className="block mt-4 bg-gold text-green-900 font-condensed font-bold text-sm uppercase tracking-widest text-center py-3">
+            className="block mt-4 bg-gold text-green-900 font-condensed font-bold text-sm uppercase tracking-widest text-center py-3" style={{ borderRadius: "2px" }}>
             Join ANFASSC
           </Link>
         </div>
