@@ -37,6 +37,13 @@ export default function RegisterForm() {
     if (signUpError) { setError(signUpError.message); setLoading(false); return; }
 
     if (data.session) {
+      // Send welcome email (fire-and-forget, don't block navigation)
+      fetch("/api/email/welcome", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, fullName: `${firstName} ${lastName}`.trim() }),
+      }).catch(() => {});
+
       router.push("/dashboard");
       router.refresh();
       return;

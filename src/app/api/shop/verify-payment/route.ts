@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
+import { sendMembershipConfirmationEmail, sendOrderConfirmationEmail } from "@/lib/email/resend";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,8 +18,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Payment not successful" }, { status: 400 });
     }
 
-    const { metadata, amount } = paystackData.data;
+    const { metadata, amount, customer } = paystackData.data;
     const supabase = await createAdminClient();
+    const customerEmail = customer?.email as string | undefined;
 
     if (metadata?.type === "membership") {
       const startDate = new Date().toISOString().split("T")[0];
@@ -32,8 +34,10 @@ export async function POST(request: NextRequest) {
         .eq("user_id", metadata.user_id)
         .maybeSingle();
 
+      let membershipNumber = "";
+
       if (existing) {
-        await supabase
+        const { data: updated } = await supabase
           .from("memberships")
           .update({
             tier: metadata.tier,
@@ -42,9 +46,12 @@ export async function POST(request: NextRequest) {
             expiry_date: expiryDate,
             paystack_reference: reference,
           })
-          .eq("id", existing.id);
+          .eq("id", existing.id)
+          .select("membership_number")
+          .single();
+        membershipNumber = updated?.membership_number ?? "";
       } else {
-        await supabase.from("memberships").insert({
+        const { data: inserted } = await supabase.from("memberships").insert({
           user_id: metadata.user_id,
           tier: metadata.tier,
           status: "active",
@@ -52,15 +59,39 @@ export async function POST(request: NextRequest) {
           start_date: startDate,
           expiry_date: expiryDate,
           paystack_reference: reference,
-        });
+        }).select("membership_number").single();
+        membershipNumber = inserted?.membership_number ?? "";
+      }
+
+      // Send confirmation email
+      if (customerEmail) {
+        const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", metadata.user_id).single();
+        await sendMembershipConfirmationEmail(
+          customerEmail,
+          profile?.full_name ?? "Member",
+          metadata.tier,
+          membershipNumber
+        );
       }
     }
 
     if (metadata?.type === "order") {
-      await supabase
+      const { data: order } = await supabase
         .from("orders")
         .update({ status: "paid" })
-        .eq("paystack_reference", reference);
+        .eq("paystack_reference", reference)
+        .select("items, total, user_id")
+        .single();
+
+      if (order && customerEmail) {
+        const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", order.user_id).single();
+        await sendOrderConfirmationEmail(
+          customerEmail,
+          profile?.full_name ?? "Member",
+          order.total,
+          order.items
+        );
+      }
     }
 
     return NextResponse.json({ success: true, amount });
