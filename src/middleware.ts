@@ -5,7 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const PROTECTED_ROUTES = ["/dashboard", "/profile", "/membership-card", "/orders"];
 
 // Routes only accessible when NOT logged in
-const AUTH_ROUTES = ["/login", "/register", "/forgot-password"];
+const AUTH_ROUTES = ["/login", "/register", "/forgot-password", "/reset-password"];
 
 // Routes that require admin role
 const ADMIN_ROUTES = ["/admin"];
@@ -60,6 +60,10 @@ export async function middleware(request: NextRequest) {
 
   // Redirect logged-in users away from auth pages
   if (AUTH_ROUTES.some((r) => pathname.startsWith(r))) {
+    // Allow logged-in users to access reset-password
+    if (pathname.startsWith("/reset-password")) {
+      return response;
+    }
     if (user) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
