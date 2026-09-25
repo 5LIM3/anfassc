@@ -11,6 +11,7 @@ interface CartItemInput {
   price: number;
   quantity: number;
   size?: string;
+  image?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -43,6 +44,7 @@ export async function POST(request: NextRequest) {
         quantity: i.quantity,
         price: i.price * 100,
         size: i.size ?? null,
+        image: i.image ?? null,
       })),
       total: amountKobo,
       status: "pending",

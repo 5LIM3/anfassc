@@ -78,12 +78,22 @@ export default async function OrdersPage() {
                     <div style={{ padding: "1rem 1.5rem" }}>
                       {items.length > 0 ? (
                         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-                          {items.map((item: { product_name: string; quantity: number; size?: string; price: number }, i: number) => (
+                          {items.map((item: { product_name: string; quantity: number; size?: string; price: number; image?: string }, i: number) => (
                             <li key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.5rem 0", borderBottom: i < items.length - 1 ? "1px solid #f5f5f5" : "none" }}>
-                              <div>
-                                <span style={{ fontSize: "0.9rem", fontWeight: 600, color: "#0A0A0A" }}>{item.product_name}</span>
-                                {item.size && <span style={{ fontSize: "0.8rem", color: "#999", marginLeft: "8px" }}>Size: {item.size}</span>}
-                                <span style={{ fontSize: "0.8rem", color: "#666", marginLeft: "8px" }}>× {item.quantity}</span>
+                              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                                <div style={{ width: "40px", height: "40px", flexShrink: 0, background: "#f5f5f5", borderRadius: "2px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                  {item.image ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img src={item.image} alt={item.product_name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                                  ) : (
+                                    <span style={{ fontFamily: "var(--font-display)", fontSize: "0.9rem", fontStyle: "italic", color: "rgba(0,135,81,0.2)", fontWeight: 900 }}>NG</span>
+                                  )}
+                                </div>
+                                <div>
+                                  <span style={{ fontSize: "0.9rem", fontWeight: 600, color: "#0A0A0A" }}>{item.product_name}</span>
+                                  {item.size && <span style={{ fontSize: "0.8rem", color: "#999", marginLeft: "8px" }}>Size: {item.size}</span>}
+                                  <span style={{ fontSize: "0.8rem", color: "#666", marginLeft: "8px" }}>× {item.quantity}</span>
+                                </div>
                               </div>
                               <span style={{ fontSize: "0.85rem", color: "#008751", fontWeight: 600 }}>
                                 ₦{((item.price / 100) * item.quantity).toLocaleString()}

@@ -146,10 +146,20 @@ export default function CartPage() {
               <div>
                 {items.map((item) => (
                   <div key={`${item.id}-${item.size}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1.25rem 0", borderBottom: "1px solid #eee", flexWrap: "wrap", gap: "1rem" }}>
-                    <div>
-                      <p style={{ fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.25rem" }}>{item.name}</p>
-                      {item.size && <p style={{ fontSize: "0.8rem", color: "#666" }}>Size: {item.size}</p>}
-                      <p style={{ fontSize: "0.85rem", color: "#008751", fontWeight: 700, marginTop: "0.25rem" }}>₦{item.price.toLocaleString()}</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                      <div style={{ width: "56px", height: "56px", flexShrink: 0, background: "#f5f5f5", borderRadius: "2px", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {item.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={item.image} alt={item.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          <span style={{ fontFamily: "var(--font-display)", fontSize: "1.2rem", fontStyle: "italic", color: "rgba(0,135,81,0.2)", fontWeight: 900 }}>NG</span>
+                        )}
+                      </div>
+                      <div>
+                        <p style={{ fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.25rem" }}>{item.name}</p>
+                        {item.size && <p style={{ fontSize: "0.8rem", color: "#666" }}>Size: {item.size}</p>}
+                        <p style={{ fontSize: "0.85rem", color: "#008751", fontWeight: 700, marginTop: "0.25rem" }}>₦{item.price.toLocaleString()}</p>
+                      </div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                       <button onClick={() => updateQuantity(item.id, item.quantity - 1, item.size)} style={{ width: "26px", height: "26px", border: "1px solid #ddd", background: "#fff", cursor: "pointer" }}>−</button>

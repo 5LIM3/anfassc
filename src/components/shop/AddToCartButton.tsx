@@ -7,15 +7,16 @@ interface AddToCartButtonProps {
   name: string;
   price: number;
   sizes?: string[];
+  image?: string;
 }
 
-export default function AddToCartButton({ id, name, price, sizes }: AddToCartButtonProps) {
+export default function AddToCartButton({ id, name, price, sizes, image }: AddToCartButtonProps) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
   const [size, setSize] = useState(sizes?.[0] ?? "");
 
   function handleAdd() {
-    addItem({ id, name, price, size: size || undefined });
+    addItem({ id, name, price, size: size || undefined, image });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   }

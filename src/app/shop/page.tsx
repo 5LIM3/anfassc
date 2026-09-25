@@ -50,7 +50,12 @@ export default async function ShopPage() {
                   return (
                     <div key={product.id} style={{ background: "#fff", border: "1px solid #eee", borderRadius: "2px", overflow: "hidden" }}>
                       <div style={{ height: "200px", background: "#f5f5f5", display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                        <span style={{ fontFamily: "var(--font-display)", fontSize: "3.5rem", fontStyle: "italic", color: "rgba(0,135,81,0.15)", fontWeight: 900 }}>NG</span>
+                        {product.images && product.images.length > 0 ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={product.images[0]} alt={product.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                        ) : (
+                          <span style={{ fontFamily: "var(--font-display)", fontSize: "3.5rem", fontStyle: "italic", color: "rgba(0,135,81,0.15)", fontWeight: 900 }}>NG</span>
+                        )}
                         {product.is_featured && (
                           <span style={{
                             position: "absolute", top: "10px", right: "10px",
@@ -76,6 +81,7 @@ export default async function ShopPage() {
                               name={product.name}
                               price={priceNaira}
                               sizes={product.sizes && product.sizes.length > 0 ? product.sizes : undefined}
+                              image={product.images && product.images.length > 0 ? product.images[0] : undefined}
                             />
                           ) : (
                             <span style={{ fontSize: "11px", color: "#c0392b", fontWeight: 600 }}>Out of Stock</span>
