@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import ImageUploader from "@/components/admin/ImageUploader";
 
 export default function AdminProductsPage() {
   const router = useRouter();
@@ -14,6 +15,8 @@ export default function AdminProductsPage() {
     is_featured: false,
     sizes: "",
   });
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -31,13 +34,14 @@ export default function AdminProductsPage() {
       const res = await fetch("/api/admin/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, sizes: sizesArray }),
+        body: JSON.stringify({ ...form, sizes: sizesArray, images }),
       });
       const data = await res.json();
 
       if (data.success) {
         setMessage({ type: "success", text: `"${form.name}" was added to the shop!` });
         setForm({ name: "", description: "", price: "", category: "jersey", stock: "10", is_featured: false, sizes: "" });
+        setImages([]);
         router.refresh();
       } else {
         setMessage({ type: "error", text: data.error ?? "Something went wrong." });
@@ -105,6 +109,11 @@ export default function AdminProductsPage() {
             <input value={form.sizes} onChange={(e) => setForm((f) => ({ ...f, sizes: e.target.value }))} placeholder="S, M, L, XL, XXL" style={inputStyle} />
           </div>
 
+          <div>
+            <label style={labelStyle}>Product Images (optional)</label>
+            <ImageUploader value={images} onChange={setImages} onUploadingChange={setUploading} />
+          </div>
+
           <label style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", color: "#333" }}>
             <input type="checkbox" checked={form.is_featured} onChange={(e) => setForm((f) => ({ ...f, is_featured: e.target.checked }))} />
             Mark as Featured
@@ -112,14 +121,14 @@ export default function AdminProductsPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || uploading}
             style={{
-              background: loading ? "#005e38" : "#008751", color: "#fff",
+              background: loading || uploading ? "#005e38" : "#008751", color: "#fff",
               fontWeight: 700, fontSize: "13px", letterSpacing: "1.5px", textTransform: "uppercase",
-              padding: "13px", border: "none", borderRadius: "2px", cursor: loading ? "default" : "pointer",
+              padding: "13px", border: "none", borderRadius: "2px", cursor: loading || uploading ? "default" : "pointer",
             }}
           >
-            {loading ? "Adding..." : "Add Product to Shop"}
+            {loading ? "Adding..." : uploading ? "Uploading images..." : "Add Product to Shop"}
           </button>
         </form>
       </div>

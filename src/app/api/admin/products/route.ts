@@ -23,10 +23,19 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, price, category, stock, is_featured, sizes } = body;
+    const { name, description, price, category, stock, is_featured, sizes, images } = body;
 
     if (!name || !price || !category) {
       return NextResponse.json({ success: false, error: "Name, price, and category are required" }, { status: 400 });
+    }
+
+    const cloudinaryPrefix = `https://res.cloudinary.com/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/`;
+    const imageList: string[] = Array.isArray(images) ? images : [];
+    if (
+      imageList.length > 5 ||
+      !imageList.every((u) => typeof u === "string" && u.startsWith(cloudinaryPrefix))
+    ) {
+      return NextResponse.json({ success: false, error: "Invalid product images" }, { status: 400 });
     }
 
     const adminSupabase = await createAdminClient();
@@ -39,6 +48,7 @@ export async function POST(request: NextRequest) {
       stock: Number(stock) || 0,
       is_featured: !!is_featured,
       sizes: sizes && sizes.length > 0 ? sizes : [],
+      images: imageList,
       is_active: true,
     }).select().single();
 
