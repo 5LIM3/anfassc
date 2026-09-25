@@ -1,7 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
 import CartIcon from "@/components/shop/CartIcon";
+import { createClient } from "@/lib/supabase/client";
 
 const NAV_LINKS = [
   { label: "About", href: "/about" },
@@ -15,6 +18,9 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -27,6 +33,22 @@ export default function Navbar() {
     document.body.style.overflow = menuOpen ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [menuOpen]);
+
+  // Track auth state so the header reflects login/logout immediately
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, [supabase]);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    setMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  }
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b-2 border-gold ${scrolled ? "bg-green-900/98 backdrop-blur-sm" : "bg-green-900"}`}>
@@ -53,15 +75,27 @@ export default function Navbar() {
 
         <div className="hidden md:flex items-center gap-5">
           <CartIcon />
-          <Link href="/login" className="font-condensed font-bold text-xs uppercase tracking-[2px] text-white/70 hover:text-white transition-colors">
-            Login
-          </Link>
-          <Link
-            href="/membership"
-            style={{ background: "#D4AF37", color: "#003d24", fontWeight: 700, fontSize: "12px", letterSpacing: "2px", textTransform: "uppercase", padding: "8px 20px", borderRadius: "2px", textDecoration: "none" }}
-          >
-            Join Now
-          </Link>
+          {user ? (
+            <button
+                onClick={handleLogout}
+                className="font-condensed font-bold text-xs uppercase tracking-[2px]"
+                style={{ background: "#D4AF37", color: "#003d24", padding: "8px 20px", borderRadius: "2px", border: "none", cursor: "pointer" }}
+              >
+                Logout
+            </button>
+          ) : (
+            <>
+              <Link href="/login" className="font-condensed font-bold text-xs uppercase tracking-[2px] text-white/70 hover:text-white transition-colors">
+                Login
+              </Link>
+              <Link
+                href="/membership"
+                style={{ background: "#D4AF37", color: "#003d24", fontWeight: 700, fontSize: "12px", letterSpacing: "2px", textTransform: "uppercase", padding: "8px 20px", borderRadius: "2px", textDecoration: "none" }}
+              >
+                Join Now
+              </Link>
+            </>
+          )}
         </div>
 
         <div className="flex items-center gap-4 md:hidden">
@@ -91,14 +125,24 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <Link href="/login" onClick={() => setMenuOpen(false)}
-            className="block py-3 font-condensed font-bold text-sm uppercase tracking-widest text-white/80 hover:text-gold border-b border-green-800 transition-colors">
-            Login
-          </Link>
-          <Link href="/membership" onClick={() => setMenuOpen(false)}
-            className="block mt-4 bg-gold text-green-900 font-condensed font-bold text-sm uppercase tracking-widest text-center py-3" style={{ borderRadius: "2px" }}>
-            Join ANFASSC
-          </Link>
+          {user ? (
+            <button onClick={handleLogout}
+              className="block w-full text-left mt-4 bg-gold text-green-900 font-condensed font-bold text-sm uppercase tracking-widest text-center py-3"
+              style={{ borderRadius: "2px", border: "none", cursor: "pointer" }}>
+              Logout
+            </button>
+          ) : (
+            <>
+              <Link href="/login" onClick={() => setMenuOpen(false)}
+                className="block py-3 font-condensed font-bold text-sm uppercase tracking-widest text-white/80 hover:text-gold border-b border-green-800 transition-colors">
+                Login
+              </Link>
+              <Link href="/membership" onClick={() => setMenuOpen(false)}
+                className="block mt-4 bg-gold text-green-900 font-condensed font-bold text-sm uppercase tracking-widest text-center py-3" style={{ borderRadius: "2px" }}>
+                Join ANFASSC
+              </Link>
+            </>
+          )}
         </div>
       )}
     </nav>
