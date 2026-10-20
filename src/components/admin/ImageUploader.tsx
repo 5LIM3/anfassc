@@ -8,17 +8,22 @@ type Props = {
   onUploadingChange?: (uploading: boolean) => void;
   max?: number;
   maxSizeMB?: number;
+  folder?: "anfassc/products" | "anfassc/travel";
 };
 
 const ALLOWED = ["image/jpeg", "image/png", "image/webp"];
 
-export default function ImageUploader({ value, onChange, onUploadingChange, max = 5, maxSizeMB = 5 }: Props) {
+export default function ImageUploader({ value, onChange, onUploadingChange, max = 5, maxSizeMB = 5, folder = "anfassc/products" }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
   async function uploadOne(file: File): Promise<string> {
-    const sigRes = await fetch("/api/admin/cloudinary-signature", { method: "POST" });
+    const sigRes = await fetch("/api/admin/cloudinary-signature", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ folder }),
+    });
     const sig = await sigRes.json();
     if (!sigRes.ok || !sig.success) throw new Error(sig.error ?? "Could not start upload");
 

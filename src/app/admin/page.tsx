@@ -46,6 +46,7 @@ export default async function AdminDashboard() {
               { label: "News / CMS", href: "/admin/news" },
               { label: "Gallery", href: "/admin/gallery" },
               { label: "Products", href: "/admin/products" },
+              { label: "Travel Packages", href: "/admin/travel" },
               { label: "Messages", href: "/admin/messages" },
               { label: "Settings", href: "/admin/settings" },
               { label: "← Back to Site", href: "/" },

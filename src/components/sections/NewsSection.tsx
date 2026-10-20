@@ -1,21 +1,33 @@
 "use client";
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import type { SanityNewsPost } from "@/lib/sanity/client";
 
-const FEATURED = {
+const CATEGORY_LABELS: Record<string, string> = {
+  "super-eagles": "Super Eagles",
+  afcon: "AFCON",
+  membership: "Membership",
+  merchandise: "Merchandise",
+  governance: "Governance",
+  travel: "Travel",
+};
+
+// Shown only if no real posts have been published yet in Sanity Studio
+const FEATURED_FALLBACK = {
   tag: "AFCON 2025", date: "January 2025", slug: "anfassc-afcon-morocco-2025",
   title: "ANFASSC Leads Delegation to AFCON Morocco 2025 in Full Force",
   body: "Hundreds of ANFASSC members descended on Moroccan stadiums flying the Nigerian flag high as the Super Eagles competed at the 2025 Africa Cup of Nations. President Prince Abayomi Ogunjimi led the official delegation.",
+  image: null as string | null,
 };
 
-const SIDEBAR = [
+const SIDEBAR_FALLBACK = [
   { tag: "Membership", date: "March 2025", slug: "membership-2025", title: "2025 Membership Registration Now Open — New Benefits Announced" },
   { tag: "Shop", date: "February 2025", slug: "jersey-2025", title: "New ANFASSC Official Jersey Collection Available — Order Yours Today" },
   { tag: "Governance", date: "December 2024", slug: "agm-2024", title: "ANFASSC Holds Annual General Meeting — Strategic Plan 2025–2027 Adopted" },
   { tag: "Super Eagles", date: "November 2024", slug: "squad-2025", title: "ANFASSC Congratulates Super Eagles on AFCON Group Stage Qualification" },
 ];
 
-export default function NewsSection() {
+export default function NewsSection({ posts = [] }: { posts?: SanityNewsPost[] }) {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     const els = ref.current?.querySelectorAll(".ns-fade");
@@ -25,6 +37,28 @@ export default function NewsSection() {
     els?.forEach((el) => obs.observe(el));
     return () => obs.disconnect();
   }, []);
+
+  const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+  const featured = posts[0]
+    ? {
+        tag: CATEGORY_LABELS[posts[0].category] ?? posts[0].category,
+        date: fmtDate(posts[0].publishedAt),
+        slug: posts[0].slug.current,
+        title: posts[0].title,
+        body: posts[0].excerpt,
+        image: posts[0].mainImageUrl ?? null,
+      }
+    : FEATURED_FALLBACK;
+
+  const sidebar = posts.length > 1
+    ? posts.slice(1, 5).map((p) => ({
+        tag: CATEGORY_LABELS[p.category] ?? p.category,
+        date: fmtDate(p.publishedAt),
+        slug: p.slug.current,
+        title: p.title,
+      }))
+    : SIDEBAR_FALLBACK;
 
   return (
     <section ref={ref} style={{ background: "#F8F5EF", padding: "6rem 3rem" }}>
@@ -39,20 +73,25 @@ export default function NewsSection() {
         </div>
 
         <div className="rgrid-2" style={{ gap: "2rem", gridTemplateColumns: "2fr 1fr" }}>
-          <Link href={`/news/${FEATURED.slug}`} className="ns-fade" style={{ background: "#fff", border: "1px solid rgba(0,135,81,0.15)", borderRadius: "2px", overflow: "hidden", textDecoration: "none", color: "inherit", display: "block" }}>
+          <Link href={`/news/${featured.slug}`} className="ns-fade" style={{ background: "#fff", border: "1px solid rgba(0,135,81,0.15)", borderRadius: "2px", overflow: "hidden", textDecoration: "none", color: "inherit", display: "block" }}>
             <div style={{ background: "#008751", height: "260px", display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden" }}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: "6rem", fontWeight: 900, fontStyle: "italic", color: "rgba(255,255,255,0.1)" }}>AFCON</div>
-              <div style={{ position: "absolute", top: "1.5rem", left: "1.5rem", background: "#D4AF37", color: "#003d24", fontWeight: 700, fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", padding: "5px 12px" }}>{FEATURED.tag}</div>
+              {featured.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={featured.image} alt={featured.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <div style={{ fontFamily: "var(--font-display)", fontSize: "6rem", fontWeight: 900, fontStyle: "italic", color: "rgba(255,255,255,0.1)" }}>{featured.tag}</div>
+              )}
+              <div style={{ position: "absolute", top: "1.5rem", left: "1.5rem", background: "#D4AF37", color: "#003d24", fontWeight: 700, fontSize: "11px", letterSpacing: "2px", textTransform: "uppercase", padding: "5px 12px" }}>{featured.tag}</div>
             </div>
             <div style={{ padding: "2rem" }}>
-              <p style={{ fontSize: "12px", color: "#666", letterSpacing: "1px", marginBottom: "0.75rem" }}>{FEATURED.date}</p>
-              <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.5rem", fontWeight: 700, color: "#0A0A0A", lineHeight: 1.3, marginBottom: "1rem" }}>{FEATURED.title}</h3>
-              <p style={{ fontSize: "0.95rem", color: "#666", lineHeight: 1.7, margin: 0 }}>{FEATURED.body}</p>
+              <p style={{ fontSize: "12px", color: "#666", letterSpacing: "1px", marginBottom: "0.75rem" }}>{featured.date}</p>
+              <h3 style={{ fontFamily: "var(--font-display)", fontSize: "1.5rem", fontWeight: 700, color: "#0A0A0A", lineHeight: 1.3, marginBottom: "1rem" }}>{featured.title}</h3>
+              <p style={{ fontSize: "0.95rem", color: "#666", lineHeight: 1.7, margin: 0 }}>{featured.body}</p>
             </div>
           </Link>
 
           <div style={{ display: "flex", flexDirection: "column" }}>
-            {SIDEBAR.map((item) => (
+            {sidebar.map((item) => (
               <Link key={item.slug} href={`/news/${item.slug}`} className="ns-fade" style={{ background: "#fff", border: "1px solid rgba(0,135,81,0.15)", borderBottom: "none", padding: "1.5rem", textDecoration: "none", color: "inherit", display: "block" }}>
                 <div style={{ fontWeight: 600, fontSize: "10px", letterSpacing: "2px", textTransform: "uppercase", color: "#008751", marginBottom: "0.5rem" }}>{item.tag}</div>
                 <h4 style={{ fontSize: "0.95rem", fontWeight: 600, color: "#0A0A0A", lineHeight: 1.4, marginBottom: "0.4rem" }}>{item.title}</h4>
